@@ -28,6 +28,9 @@ app.use('/api/sessions', sessionRoutes);
 const aiRoutes = require('./routes/aiRoutes');
 app.use('/api/ai', aiRoutes);
 
+const resumeRoutes = require('./routes/resumeRoutes');
+app.use('/api/resume', resumeRoutes);
+
 
 // Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI)
