@@ -21,6 +21,13 @@ app.use('/api/auth', authRoutes);
 const questionRoutes = require('./routes/questionRoutes');
 app.use('/api/questions', questionRoutes);
 
+const sessionRoutes = require('./routes/sessionRoutes');
+app.use('/api/interview', sessionRoutes);
+app.use('/api/sessions', sessionRoutes);
+
+const aiRoutes = require('./routes/aiRoutes');
+app.use('/api/ai', aiRoutes);
+
 
 // Connect to MongoDB and start server
 mongoose.connect(process.env.MONGO_URI)
