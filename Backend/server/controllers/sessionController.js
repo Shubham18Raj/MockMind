@@ -2,61 +2,37 @@ const Session = require('../models/Session');
 const Question = require('../models/Question');
 
 // POST /api/interview/start
-// Creates a new session with random questions
 const startSession = async (req, res) => {
   try {
-    const { role, count = 8 } = req.body;
+    const { role, totalQuestions = 8 } = req.body;
 
-    // Get random questions for the selected role
     const questions = await Question.aggregate([
-      { $match: { role } },
-      { $sample: { size: parseInt(count) } }
+      { $match: { role: role } },
+      { $sample: { size: totalQuestions } }
     ]);
 
-    if (questions.length === 0) {
-      return res.status(404).json({ message: 'No questions found for this role' });
-    }
-
-    // Pre-fill answers array with empty answers
-    const answers = questions.map(q => ({
-      question: q._id,
-      questionText: q.text,
-      userAnswer: '',
-      aiFeedback: {
-        score: 0,
-        strengths: [],
-        improvements: [],
-        idealAnswer: ''
-      }
-    }));
-
-    // Create the session
     const session = await Session.create({
       user: req.user.id,
       role,
-      answers,
       totalQuestions: questions.length,
-      status: 'in-progress'
-    });
-
-    res.status(201).json({
-      message: 'Session started!',
-      sessionId: session._id,
-      questions: questions.map(q => ({
-        _id: q._id,
-        text: q.text,
-        difficulty: q.difficulty,
-        category: q.category
+      answers: questions.map(q => ({
+        question: q._id,
+        questionText: q.text,
       }))
     });
 
+
+    res.json({
+      session,
+      questions  
+    });
+
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
 // POST /api/interview/answer
-// Saves user answer + AI feedback for one question
 const saveAnswer = async (req, res) => {
   try {
     const { sessionId, questionId, userAnswer, aiFeedback } = req.body;
@@ -67,12 +43,10 @@ const saveAnswer = async (req, res) => {
       return res.status(404).json({ message: 'Session not found' });
     }
 
-    // Check session belongs to this user
     if (session.user.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
-    // Find the answer in session and update it
     const answerIndex = session.answers.findIndex(
       a => a.question.toString() === questionId
     );
@@ -95,7 +69,6 @@ const saveAnswer = async (req, res) => {
 };
 
 // POST /api/interview/finish
-// Finalizes session and calculates scores
 const finishSession = async (req, res) => {
   try {
     const { sessionId } = req.body;
@@ -110,7 +83,7 @@ const finishSession = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
-    // Calculate total and average score
+
     const answeredQuestions = session.answers.filter(a => a.userAnswer !== '');
     const totalScore = answeredQuestions.reduce((sum, a) => sum + a.aiFeedback.score, 0);
     const averageScore = answeredQuestions.length > 0
@@ -139,7 +112,6 @@ const finishSession = async (req, res) => {
 };
 
 // GET /api/sessions/me
-// Get all past sessions for logged-in user
 const getMySessions = async (req, res) => {
   try {
     const sessions = await Session.find({
@@ -156,7 +128,6 @@ const getMySessions = async (req, res) => {
 };
 
 // GET /api/sessions/:id
-// Get detailed results of one session
 const getSessionById = async (req, res) => {
   try {
     const session = await Session.findById(req.params.id);
@@ -176,7 +147,6 @@ const getSessionById = async (req, res) => {
 };
 
 // GET /api/leaderboard
-// Top users ranked by average score
 const getLeaderboard = async (req, res) => {
   try {
     const leaderboard = await Session.aggregate([
