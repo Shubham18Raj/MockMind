@@ -1,4 +1,4 @@
-const pdfParse = require('pdf-parse/lib/pdf-parse.js');
+const pdfParse = require('pdf-parse');
 
 const extractTextFromPDF = async (fileBuffer) => {
   try {

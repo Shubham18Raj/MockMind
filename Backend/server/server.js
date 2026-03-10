@@ -5,16 +5,15 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
+// ─── Middleware ───────────────────────────
 app.use(cors());
 app.use(express.json());
 
-// Test route
+// ─── Routes ──────────────────────────────
 app.get('/', (req, res) => {
   res.json({ message: 'MockMind API is running!' });
 });
 
-// Routes
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
@@ -31,8 +30,20 @@ app.use('/api/ai', aiRoutes);
 const resumeRoutes = require('./routes/resumeRoutes');
 app.use('/api/resume', resumeRoutes);
 
+// ─── Global Error Handler ─────────────────
+app.use((err, req, res, next) => {
+  console.error('Global error:', err.message);
+  res.status(err.status || 500).json({
+    message: err.message || 'Internal Server Error'
+  });
+});
 
-// Connect to MongoDB and start server
+// ─── 404 Handler ──────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ message: `Route ${req.url} not found` });
+});
+
+// ─── Database + Server ────────────────────
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB connected!');
