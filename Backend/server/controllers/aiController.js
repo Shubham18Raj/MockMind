@@ -1,7 +1,6 @@
-const { evaluateAnswer } = require('../utils/gemini');
+const { evaluateWithAI } = require('../utils/gemini');
 
-// POST /api/ai/evaluate
-const evaluate = async (req, res) => {
+const evaluateAnswer = async (req, res) => {
   try {
     const { question, answer } = req.body;
 
@@ -9,14 +8,12 @@ const evaluate = async (req, res) => {
       return res.status(400).json({ message: 'Question and answer are required' });
     }
 
-    console.log('Evaluating answer with Gemini...');
-    const feedback = await evaluateAnswer(question, answer);
-
+    const feedback = await evaluateWithAI(question, answer);
     res.json({ feedback });
 
   } catch (err) {
-    res.status(500).json({ message: 'AI evaluation failed', error: err.message });
+    res.status(500).json({ message: 'Evaluation failed', error: err.message });
   }
 };
 
-module.exports = { evaluate };
+module.exports = { evaluateAnswer };
