@@ -333,19 +333,40 @@ const Dashboard = () => {
       <nav className="navbar">
         <div className="nav-logo">🧠 MockMind</div>
         <div className="nav-right">
-          <div className="nav-user">
+            <button
+            onClick={() => navigate('/leaderboard')}
+            style={{
+                background: 'rgba(255,255,255,0.04)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '8px',
+                padding: '7px 14px',
+                color: 'rgba(255,255,255,0.6)',
+                fontSize: '13px',
+                fontFamily: "'DM Sans', sans-serif",
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+            }}
+            onMouseOver={e => e.target.style.color = 'white'}
+            onMouseOut={e => e.target.style.color = 'rgba(255,255,255,0.6)'}
+            >
+            🏆 Leaderboard
+            </button>
+            <div className="nav-user"
+            onClick={() => navigate('/profile')}
+            style={{ cursor: 'pointer' }}
+            >
             <div className="avatar">
-              {user?.name?.charAt(0).toUpperCase()}
+                {user?.name?.charAt(0).toUpperCase()}
             </div>
             <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)' }}>
-              {user?.name}
+                {user?.name}
             </span>
-          </div>
-          <button className="logout-btn" onClick={() => { logout(); navigate('/login') }}>
+            </div>
+            <button className="logout-btn" onClick={() => { logout(); navigate('/login') }}>
             Logout
-          </button>
+            </button>
         </div>
-      </nav>
+        </nav>
 
       <div className="main">
 

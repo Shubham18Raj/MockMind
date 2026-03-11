@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import Interview from './pages/Interview'
 import Results from './pages/Results'
 import Leaderboard from './pages/Leaderboard'
+import Profile from './pages/Profile'
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth()
@@ -29,7 +30,8 @@ function App() {
           <Route path="/interview" element={<ProtectedRoute><Interview /></ProtectedRoute>} />
           <Route path="/results/:id" element={<ProtectedRoute><Results /></ProtectedRoute>} />
           <Route path="/leaderboard" element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
-
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </BrowserRouter>
